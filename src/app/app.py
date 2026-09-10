@@ -16,6 +16,7 @@ Senior Executive Interface:
 - Extension: Relational SQL Governance Workbench
 """
 
+import utils.session
 import sys
 from pathlib import Path
 
