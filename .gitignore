@@ -10,7 +10,6 @@ ENV/
 env/
 
 # IDE files
-.vscode/
 .idea/
 .DS_Store
 
@@ -39,8 +38,9 @@ output/*
 .streamlit/secrets.toml
 
 # Environment / secrets
-.env
 *.key
 
 # OS artifacts
 Thumbs.db
+config.bat
+node_modules
