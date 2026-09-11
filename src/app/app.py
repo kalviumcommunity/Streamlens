@@ -16,6 +16,8 @@ Senior Executive Interface:
 - Extension: Relational SQL Governance Workbench
 """
 
+import utils.transport
+import utils.session
 import sys
 from pathlib import Path
 
@@ -147,6 +149,10 @@ def _user_level_retention(df: pd.DataFrame) -> float:
     user_ret = to_user_level(df)
     ret = pd.to_numeric(user_ret["retained"], errors="coerce").dropna()
     return float(ret.mean()) if len(ret) > 0 else 0.0
+
+@st.cache_data(show_spinner=False)
+def _cached_segment_comparison(df: pd.DataFrame, use_4_segments: bool = False) -> pd.DataFrame:
+    return calculate_segment_comparison(df, use_4_segments=use_4_segments)
 
 @st.cache_data
 def load_default_dataset() -> pd.DataFrame:
@@ -415,7 +421,7 @@ render_problem_statement_navigator(filtered_df)
 with tab_overview:
     # 1. Operational Alerts
     kpis_data = calculate_kpis(filtered_df)
-    segment_summary = calculate_segment_comparison(filtered_df)
+    segment_summary = _cached_segment_comparison(filtered_df)
     alerts_data = evaluate_kpi_alerts(kpis=kpis_data, segment_summary=segment_summary)
     render_alert_banners(alerts_data)
 
@@ -540,7 +546,7 @@ with tab_segments:
     with top_seg_col2:
         use_4_seg = st.toggle("4-Segment Granularity (PRD Section 6)", value=False)
 
-    seg_df = calculate_segment_comparison(filtered_df, use_4_segments=use_4_seg)
+    seg_df = _cached_segment_comparison(filtered_df, use_4_segments=use_4_seg)
 
     st.markdown("#### Comparative Cohort Performance Matrix")
     formatted_seg = seg_df.copy()
